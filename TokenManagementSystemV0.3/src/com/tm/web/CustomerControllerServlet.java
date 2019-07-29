@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.*;
 
 
 /**
@@ -113,11 +114,15 @@ public class CustomerControllerServlet extends HttpServlet {
 	}
 
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, NoSuchAlgorithmException {
 
 		String user = request.getParameter("user");
 		String pass = request.getParameter("pass");
-		if("admin".equals(user)&&"admin".equals(pass)) {
+		
+		//1. commit_id : i_sha-256_f_p_p
+		String hashPassword = getHashPassword("SHA-256",pass)
+		
+		if("admin".equals(user)&&"2aaf9646b8633a52625a019c9d07c9e601913613d9c9069124f601cd6e89ea".equals(hashPassword)) {
 			try {
 				listCustomersAdmin(request,response);
 			} catch (Exception e) {
@@ -141,5 +146,27 @@ public class CustomerControllerServlet extends HttpServlet {
 		dispatcher.forward(request, response);		
 		
 	}
-
+	
+	//2. add method to generate hash commit_id : i_sha-256_f_p_p
+	private static String getHashPassword(String algorithmName, String password) throws NoSuchAlgorithmException {
+		//get instance
+		MessageDigest md = MessageDigest.getInstance(algorithmName);
+		
+		//update the password for hash creation
+		md.update(password.getBytes());
+		
+		//get the hash
+		byte[] hashByte = md.digest();
+		
+		//convert it to string
+		StringBuffer sb = new StringBuffer();
+		for(byte b : hashByte) {
+			sb.append(Integer.toHexString(b & 0xff).toString());
+		}
+		
+		//return it as string
+		return sb.toString();
+	}
+	
+	
 }
