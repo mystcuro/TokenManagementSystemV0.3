@@ -122,7 +122,7 @@ public class CustomerControllerServlet extends HttpServlet {
 		//1. commit_id : i_sha-256_f_p_p
 		String hashPassword = getHashPassword("SHA-256",pass)
 		
-		if("admin".equals(user)&&"2aaf9646b8633a52625a019c9d07c9e601913613d9c9069124f601cd6e89ea".equals(hashPassword)) {
+		if("admin".equals(user)&&"21232f297a57a5a743894a0e4a801fc3".equals(hashPassword)) {
 			try {
 				listCustomersAdmin(request,response);
 			} catch (Exception e) {
